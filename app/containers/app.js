@@ -1,25 +1,12 @@
 import React, { Component } from 'react';
 import {
 	Navigator,
-	AsyncStorage,
 	BackAndroid,
 	ToastAndroid,
 	Platform
 } from 'react-native';
 
 import Index from '../containers/index';
-import Storage from 'react-native-storage';
-
-var storage = new Storage({
-	size: 1000,
-	storageBackend: AsyncStorage,
-	defaultExpires: null,  //永不过期
-	enableCache: true
-});
-
-var count = 1;
-
-global.storage = storage;
 
 export default class App extends Component{
 	componentWillMount() {
@@ -33,12 +20,10 @@ export default class App extends Component{
 		}
 	}
 	onBackAndroid = () => {
-		// console.log(this);
 		const nav = this.navigator;
 		const routers = nav.getCurrentRoutes();
 		if(routers.length>1){
 			const top = routers[routers.length-1];
-			// console.log(top);
 			if(top.component.prototype.ignoreBack){
 				return true;
 			}

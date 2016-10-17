@@ -98,5 +98,22 @@ export default style = StyleSheet.create({
     width: screenHeight-20,
     height: screenWidth,
     overflow: 'visible'
+  },
+  scroll_footer: {
+    height: 20,
+    width: screenWidth,
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  scroll_footer_icon: {
+    width: 14,
+    height: 14,
+  },
+  scroll_footer_text: {
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 12,
+    marginLeft: 5
   }
 });

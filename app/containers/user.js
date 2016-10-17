@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Style from '../styles/style.js';
 import NavigatorBar from '../components/NavigatorBar';
 
-import MatchList from '../scenes/matchlist';
+import Matches from '../scenes/matches';
 import MatchDetail from '../scenes/matchdetail';
 
 var screenWidth = Dimensions.get('window').width;
@@ -28,7 +28,7 @@ export default class User extends Component{
 	  super(props);
 	  this.state = {
 	  	match_id: 0,
-	  	account_id: '',
+	  	account_id: 0,
 	  	modalVisible: false,
 	  	avatar: 'http://oalqimdk5.bkt.clouddn.com/1609165315339.jpg',
 	  	nickname: '',
@@ -41,17 +41,14 @@ export default class User extends Component{
 		// 	key: 'account'
 		// });
 		this._hasSetAccount();
-		console.log(this);
 	}
 
 	//验证是否设置账号
 	_hasSetAccount() {
-		// console.log(storage);
 		var _this = this;
 		storage.load({
 			key: 'account'
 		}).then(ret=>{
-			// console.log(ret);
 			if(ret.accountId){
 				_this.setState({
 					account_id: parseInt(ret.accountId)
@@ -64,7 +61,6 @@ export default class User extends Component{
 				});
 			}
 		}).catch(err=>{
-			// console.log(err);
 			_this.setState({
 				idModalVisible: true
 			});
@@ -92,7 +88,6 @@ export default class User extends Component{
 				steam_id: parseInt(this.state.account_id)
 			})
 		}).then(response=>response.json()).then(responseData=>{
-			// console.log(responseData);
 			this.setState({
 				avatar: responseData.response.players[0].avatarmedium,
 				nickname: responseData.response.players[0].personaname
@@ -104,8 +99,8 @@ export default class User extends Component{
 		const {navigator} = this.props;
 		if(navigator){
 			navigator.push({
-				name: 'match list',
-				component: MatchList
+				name: 'matches',
+				component: Matches
 			});
 		}
 	}

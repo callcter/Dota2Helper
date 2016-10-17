@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
 	StyleSheet,
 	Text,
@@ -7,8 +9,13 @@ import {
 	ListView,
 	TouchableOpacity,
 	Platform,
-	Navigator
+	Navigator,
+	RefreshControl,
+	Animated,
+	Easing
 } from 'react-native';
+
+import * as MatchesActions from '../actions/matches';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Style from '../styles/style.js';
@@ -17,36 +24,31 @@ import MatchDetail from '../scenes/matchdetail';
 
 var heroBaseUrl = 'http://oalqimdk5.bkt.clouddn.com/dota/heroes/';
 
-export default class MatchList extends Component{
+class Matches extends Component{
 	constructor(props) {
 	  super(props);
 	  this.state = {
 	  	match_id: 0,
-	  	account_id: 197301278,
-	  	dataSource: new ListView.DataSource({rowHasChanged: (r1,r2)=>r1!==r2})
+	  	// account_id: 197301278,
+	  	dataSource: new ListView.DataSource({rowHasChanged: (r1,r2)=>r1!==r2}),
+	  	rotation: new Animated.Value(0)
 	  };
+	  this.renderFooter = this.renderFooter.bind(this);
 	}
 
 	componentDidMount() {
-		this.getMatchList();
+		this.props.getMatches();
+		this.startAnimation();
 	}
 
-	getMatchList() {
-		fetch('http://dota.dreamser.com/matchlist',{
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				account_id: this.state.account_id
-			})
-		}).then(response=>response.json()).then(responseData=>{
-			this.setState({
-				dataSource: this.state.dataSource.cloneWithRows(responseData.matches)
-			});
-		}).done();
-	}
+	startAnimation() {
+    this.state.rotation.setValue(0);
+    Animated.timing(this.state.rotation,{
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.linear
+    }).start(()=>this.startAnimation());
+  }
 
 	matchDetail(matchid) {
 		const {navigator} = this.props;
@@ -67,6 +69,26 @@ export default class MatchList extends Component{
 			navigator.pop();
 		}
 	}
+
+	renderFooter() {
+    return (
+      <View style={Style.scroll_footer}>
+        <Animated.View style={[Style.scroll_footer_icon,{
+            transform: [{
+              rotateZ: this.state.rotation.interpolate({
+                inputRange: [0,1],
+                outputRange: ['0deg','360deg']
+              })
+            }]
+          }]}>
+          <Icon name='spinner' size={14} color='#666' />
+        </Animated.View>
+        <Text style={Style.scroll_footer_text}>
+          加载中
+        </Text>
+      </View>
+    );
+  }
 
 	_renderRow(data:Object) {
 		return (
@@ -89,6 +111,7 @@ export default class MatchList extends Component{
 	}
 
 	render() {
+		var { getMatches,refreshMatches,moreMatches,matches } = this.props;
 		return(
 			<View style={Style.container}>
 				<NavigatorBar
@@ -96,9 +119,15 @@ export default class MatchList extends Component{
 					leftClick={this._back.bind(this)}
 					title={<Text style={Style.navTitle_text}>近期比赛</Text>}/>
 				<ListView
-					dataSource={this.state.dataSource}
+					dataSource={this.state.dataSource.cloneWithRows(matches)}
 					renderRow={this._renderRow.bind(this)}
-					enableEmptySections={true} />
+					renderFooter={this.renderFooter}
+        	onEndReached={()=>moreMatches()}
+					onEndReachedThreshold={0}
+        	enableEmptySections={true}
+					refreshControl={<RefreshControl
+          	onRefresh={()=>refreshMatches()}
+          	refreshing={false} />} />
 			</View>
 		);
 	}
@@ -111,3 +140,14 @@ function timestamp(stamp){
 	var unixTimestamp = new Date(stamp * 1000);
 	return unixTimestamp.toLocaleString();
 }
+
+function mapStateToProps(state){
+	return {
+		...state.matches
+	}
+}
+function mapDispatchToProps(dispatch){
+  return bindActionCreators(MatchesActions,dispatch);
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Matches);

@@ -223,8 +223,7 @@ export default class Live extends Component{
       <View style={Style.container}>
         <ScrollableTabView
           tabBarUnderlineStyle={{backgroundColor:'#fc3',height:2}}
-          tabBarActiveTextColor='#fc3'
-          style={{height:30,paddingTop:0}}>
+          tabBarActiveTextColor='#fc3'>
           <ListView
             tabLabel='斗鱼'
             contentContainerStyle={style.videoList}
@@ -287,6 +286,7 @@ const style = StyleSheet.create({
   videoList: {
     flex: 1,
     marginTop: 2,
+    height:screenHeight-30,
     justifyContent: 'flex-start',
     flexDirection: 'row',
     flexWrap: 'wrap'
