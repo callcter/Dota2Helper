@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
 	StyleSheet,
 	Text,
@@ -12,7 +14,7 @@ import {
 	Platform,
 	Navigator
 } from 'react-native';
-
+import * as MatchdetailActions from '../actions/matchdetail';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Style from '../styles/style.js';
 import NavigatorBar from '../components/NavigatorBar';
@@ -25,66 +27,30 @@ var screenHeight = Dimensions.get('window').height;
 var isIOS = Platform.OS === 'ios';
 var count = 0;
 
-export default class DatchDetail extends Component{
+class MatchDetail extends Component{
 	constructor(props) {
 	  super(props);
-	  this.state = {
-	  	match_id: 0,
-	  	team_win: '',
-	  	radiant_score: '',
-	  	dire_score: '',
-	  	duration: 0,
-	  	dataSource: new ListView.DataSource({rowHasChanged: (r1,r2)=>r1!==r2})
-	  };
+	  this.state = {};
 	  count = 0;
 	}
-
 	componentDidMount() {
-		this.setState({
-			match_id: this.props.match_id
-		},function(){
-			this.getMatch();
-		});
+		this.props.getMatchdetail();
 	}
-
-	getMatch() {
-		fetch('http://dota.dreamser.com/matchbyid',{
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				match_id: this.state.match_id
-			})
-		}).then(response=>response.json()).then(responseData=>{
-			this.setState({
-				match_id: responseData.match_id,
-				team_win: responseData.radiant_win,
-				radiant_score: responseData.radiant_score,
-				dire_score: responseData.dire_score,
-				duration: responseData.duration,
-				dataSource: this.state.dataSource.cloneWithRows(responseData.players)
-			});
-		}).done();
-	}
-
 	_back() {
 		const {navigator} = this.props;
 		if(navigator){
 			navigator.pop();
 		}
 	}
-
 	_renderRow(data: Object) {
 		count++;
 		return (
 			<View>
-				{count===1?<View style={{borderBottomWidth:2,borderBottomColor: this.state.team_win?'#5fb760':'#d75452',marginTop:5}}>
-					<Text style={{backgroundColor:this.state.team_win?'#5fb760':'#d75452',color:'#fff',paddingLeft:5,paddingRight:5,paddingTop:3,paddingBottom:3,width:100,marginLeft:5}}>天辉 {this.state.team_win?'胜利':'失败'} {this.state.radiant_score}</Text>
+				{count===1?<View style={{borderBottomWidth:2,borderBottomColor: this.props.team_win?'#5fb760':'#d75452',marginTop:5}}>
+					<Text style={{backgroundColor:this.props.team_win?'#5fb760':'#d75452',color:'#fff',paddingLeft:5,paddingRight:5,paddingTop:3,paddingBottom:3,width:100,marginLeft:5}}>天辉 {this.props.team_win?'胜利':'失败'} {this.props.radiant_score}</Text>
 				</View>:null}
-				{count===6?<View style={{borderBottomWidth:2,borderBottomColor: this.state.team_win?'#d75452':'#5fb760',marginTop:20}}>
-					<Text style={{backgroundColor: this.state.team_win?'#d75452':'#5fb760',color:'#fff',paddingLeft:5,paddingRight:5,paddingTop:3,paddingBottom:3,width:100,marginLeft:5}}>夜魇 {this.state.team_win?'失败':'胜利'} {this.state.dire_score}</Text>
+				{count===6?<View style={{borderBottomWidth:2,borderBottomColor: this.props.team_win?'#d75452':'#5fb760',marginTop:20}}>
+					<Text style={{backgroundColor: this.props.team_win?'#d75452':'#5fb760',color:'#fff',paddingLeft:5,paddingRight:5,paddingTop:3,paddingBottom:3,width:100,marginLeft:5}}>夜魇 {this.props.team_win?'失败':'胜利'} {this.props.dire_score}</Text>
 				</View>:null}
 				<Text style={{fontSize:14,paddingTop:5,paddingBottom:5,textAlign:'center',color:'#fc3'}}>{data.playerinfo.personaname}</Text>
 				<View style={[Style.box_row]}>
@@ -166,17 +132,18 @@ export default class DatchDetail extends Component{
 		);
 	}
 	render() {
+		var { dataSource,duration,match_id } = this.props;
 		return (
 			<View style={Style.container}>
 				<NavigatorBar
 					left={<Icon name='angle-left' size={32} style={{marginTop:-8}} color='#fc3' />}
 					leftClick={this._back.bind(this)}
 					title={
-						<Text style={Style.navTitle_text}>{this.state.match_id}</Text>
+						<Text style={Style.navTitle_text}>{match_id}</Text>
 					}/>
-				<Text style={{textAlign:'center',paddingTop:5,paddingBottom:5}}>持续时间：{parseInt(this.state.duration/60)}分{this.state.duration%60}秒</Text>
+				<Text style={{textAlign:'center',paddingTop:5,paddingBottom:5}}>持续时间：{parseInt(duration/60)}分{duration%60}秒</Text>
 				<ListView
-					dataSource={this.state.dataSource}
+					dataSource={ dataSource }
 					renderRow={this._renderRow.bind(this)}
 					enableEmptySections={true} />
 			</View>
@@ -184,5 +151,12 @@ export default class DatchDetail extends Component{
 	}
 }
 
-const styles = StyleSheet.create({
-});
+function mapStateToProps(state){
+	return {
+		...state.matchdetail
+	}
+}
+function mapDispatchToProps(dispatch){
+  return bindActionCreators(MatchdetailActions,dispatch);
+}
+export default connect(mapStateToProps,mapDispatchToProps)(MatchDetail);

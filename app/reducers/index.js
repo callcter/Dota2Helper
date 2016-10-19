@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux';
-import matches from './matches';
+import matchlist from './matchlist';
+import userinfo from './userinfo';
+import matchdetail from './matchdetail';
 
 const rootReducer = combineReducers({
-	matches
+	matchlist,
+	userinfo,
+	matchdetail
 });
 
 export default rootReducer;

@@ -11,7 +11,7 @@ import {
 import TabNavigator from 'react-native-tab-navigator';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Style from '../styles/style'
+import Style from '../styles/style';
 
 import User from '../containers/user';
 import Data from '../containers/data';

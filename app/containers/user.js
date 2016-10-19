@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
-	StyleSheet,
 	Text,
 	Image,
 	View,
@@ -12,89 +13,43 @@ import {
 	Navigator
 } from 'react-native';
 
+import * as UserinfoActions from '../actions/userinfo';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Style from '../styles/style.js';
 import NavigatorBar from '../components/NavigatorBar';
 
-import Matches from '../scenes/matches';
+import Matches from '../scenes/matchlist';
 import MatchDetail from '../scenes/matchdetail';
 
 var screenWidth = Dimensions.get('window').width;
 var screenHeight = Dimensions.get('window').height;
 var isIOS = Platform.OS === 'ios';
 
-export default class User extends Component{
+class User extends Component{
 	constructor(props) {
 	  super(props);
 	  this.state = {
 	  	match_id: 0,
 	  	account_id: 0,
 	  	modalVisible: false,
-	  	avatar: 'http://oalqimdk5.bkt.clouddn.com/1609165315339.jpg',
-	  	nickname: '',
 	  	idModalVisible: false
 	  };
 	}
-
 	componentDidMount() {
 		// storage.remove({
 		// 	key: 'account'
 		// });
-		this._hasSetAccount();
+		this.props.hasLogin();
 	}
-
-	//验证是否设置账号
-	_hasSetAccount() {
-		var _this = this;
-		storage.load({
-			key: 'account'
-		}).then(ret=>{
-			if(ret.accountId){
-				_this.setState({
-					account_id: parseInt(ret.accountId)
-				},function(){
-					_this._userInfo();
-				});
-			}else{
-				_this.setState({
-					idModalVisible: true
-				});
-			}
-		}).catch(err=>{
-			_this.setState({
-				idModalVisible: true
-			});
-		});
-	}
-
 	setAccount() {
 		this.setState({
 			idModalVisible: true
 		});
 	}
-
 	closeSetAccount() {
 		return false;
 	}
-
-	_userInfo() {
-		fetch('http://dota.dreamser.com/listofaccount',{
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				steam_id: parseInt(this.state.account_id)
-			})
-		}).then(response=>response.json()).then(responseData=>{
-			this.setState({
-				avatar: responseData.response.players[0].avatarmedium,
-				nickname: responseData.response.players[0].personaname
-			});
-		}).done();
-	}
-
 	_matchList() {
 		const {navigator} = this.props;
 		if(navigator){
@@ -104,31 +59,25 @@ export default class User extends Component{
 			});
 		}
 	}
-
 	_matchDetail() {
 		const {navigator} = this.props;
 		if(navigator){
 			navigator.push({
 				name: 'match detail',
-				component: MatchDetail,
-				params: {
-					match_id: this.state.match_id
-				}
+				component: MatchDetail
 			});
 		}
 	}
-
 	searchClick() {
 		this.setState({
 			modalVisible: true
 		});
 	}
-
 	closeSearch() {
 		return false;
 	}
-
 	render() {
+		var { getUserinfo,setAccount,avatar,nickname,account_id,hasAccount,setMatchid } = this.props;
 		return(
 			<View style={Style.container}>
 				<NavigatorBar
@@ -138,10 +87,10 @@ export default class User extends Component{
 					right={<Icon name='search' size={20} style={{marginTop:3}} color='#fc3' />}
 					rightClick={this.searchClick.bind(this)} />
 				<Image
-					source={{uri:this.state.avatar}}
+					source={{uri: avatar}}
 					style={{width:60,height:60,borderRadius:30,marginTop:10,marginBottom:10,marginLeft:screenWidth/2-30}}/>
-				<Text style={{textAlign:'center'}}>{this.state.nickname}</Text>
-				{this.state.account_id===0?<Text style={{textAlign:'center'}}>尚未设置账号，点击左上角设置</Text>:
+				<Text style={{textAlign:'center'}}>{nickname}</Text>
+				{account_id===0?<Text style={{textAlign:'center'}}>尚未设置账号，点击左上角设置</Text>:
 				<TouchableOpacity
 					onPress={this._matchList.bind(this)}
 					style={{width:100,marginTop:10,marginBottom:10,marginLeft:screenWidth/2-50,backgroundColor:'#999',borderRadius:5}}>
@@ -152,8 +101,8 @@ export default class User extends Component{
 					visible={this.state.modalVisible}
 					transparent={true}
 					onRequestClose={()=>this.closeSearch.bind(this)}>
-					<View style={styles.modal_back}>
-						<View style={styles.modal_box}>
+					<View style={Style.modal_back}>
+						<View style={Style.modal_box}>
 							<View style={Style.labelBox_sign}>
 		            <Text style={Style.label_sign}>
 		              比赛ID
@@ -171,6 +120,7 @@ export default class User extends Component{
 		          </View>
 		          <View style={[Style.box_row,{marginLeft:1}]}>
 			          <TouchableOpacity style={Style.btn_normal} onPress={()=>{
+			          	setMatchid(this.state.match_id);
 			            this._matchDetail();
 			            this.setState({
 			            	modalVisible: false
@@ -191,11 +141,11 @@ export default class User extends Component{
 				</Modal>
 				<Modal
 					animationType='fade'
-					visible={this.state.idModalVisible}
+					visible={ (!hasAccount)||this.state.idModalVisible }
 					transparent={true}
 					onRequestClose={()=>this.closeSetAccount.bind(this)}>
-					<View style={styles.modal_back}>
-						<View style={styles.modal_box}>
+					<View style={Style.modal_back}>
+						<View style={Style.modal_box}>
 							<View style={Style.labelBox_sign}>
 		            <Text style={Style.label_sign}>
 		              Steam ID
@@ -213,19 +163,7 @@ export default class User extends Component{
 		          </View>
 		          <View style={[Style.box_row,{marginLeft:1}]}>
 			          <TouchableOpacity style={Style.btn_normal} onPress={()=>{
-			          	storage.save({
-			          		key: 'account',
-			          		rawData: {
-			          			accountId: parseInt(this.state.account_id)
-			          		},
-			          		expires: null
-			          	}).then(()=>{
-			          		console.log(storage);
-			          	});
-			            this._userInfo();
-			            this.setState({
-			            	idModalVisible: false
-			            });
+			            setAccount(this.state.account_id);
 			          }}>
 			            <Text style={Style.btn_normal_text}>确定</Text>
 			          </TouchableOpacity>
@@ -245,21 +183,12 @@ export default class User extends Component{
 	}
 }
 
-const styles = StyleSheet.create({
-	modal_back: {
-		backgroundColor: 'rgba(0,0,0,0.3)',
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		bottom: 0,
-		right: 0
-	},
-	modal_box: {
-		width: 300,
-		height: isIOS?130:140,
-		marginLeft: (screenWidth-300)/2,
-		marginTop: isIOS?(screenHeight-130)/2:(screenHeight-140)/2,
-		backgroundColor: '#fff',
-		borderRadius: 5
+function mapStateToProps(state){
+	return {
+		...state.userinfo
 	}
-});
+}
+function mapDispatchToProps(dispatch){
+  return bindActionCreators(UserinfoActions,dispatch);
+}
+export default connect(mapStateToProps,mapDispatchToProps)(User);

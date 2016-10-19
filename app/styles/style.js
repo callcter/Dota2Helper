@@ -115,5 +115,21 @@ export default style = StyleSheet.create({
     color: '#666',
     fontSize: 12,
     marginLeft: 5
+  },
+  modal_back: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0
+  },
+  modal_box: {
+    width: 300,
+    height: isIOS?130:140,
+    marginLeft: (screenWidth-300)/2,
+    marginTop: isIOS?(screenHeight-130)/2:(screenHeight-140)/2,
+    backgroundColor: '#fff',
+    borderRadius: 5
   }
 });

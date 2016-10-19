@@ -15,7 +15,7 @@ import {
 	Easing
 } from 'react-native';
 
-import * as MatchesActions from '../actions/matches';
+import * as MatchListActions from '../actions/matchlist';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Style from '../styles/style.js';
@@ -24,23 +24,20 @@ import MatchDetail from '../scenes/matchdetail';
 
 var heroBaseUrl = 'http://oalqimdk5.bkt.clouddn.com/dota/heroes/';
 
-class Matches extends Component{
+class MatchList extends Component{
 	constructor(props) {
 	  super(props);
 	  this.state = {
 	  	match_id: 0,
-	  	// account_id: 197301278,
 	  	dataSource: new ListView.DataSource({rowHasChanged: (r1,r2)=>r1!==r2}),
 	  	rotation: new Animated.Value(0)
 	  };
 	  this.renderFooter = this.renderFooter.bind(this);
 	}
-
 	componentDidMount() {
 		this.props.getMatches();
 		this.startAnimation();
 	}
-
 	startAnimation() {
     this.state.rotation.setValue(0);
     Animated.timing(this.state.rotation,{
@@ -49,27 +46,22 @@ class Matches extends Component{
       easing: Easing.linear
     }).start(()=>this.startAnimation());
   }
-
 	matchDetail(matchid) {
 		const {navigator} = this.props;
+		this.props.setMatchid(matchid);
 		if(navigator){
 			navigator.push({
 				name: 'match detail',
-				component: MatchDetail,
-				params: {
-					match_id: matchid
-				}
+				component: MatchDetail
 			});
 		}
 	}
-
 	_back() {
 		const {navigator} = this.props;
 		if(navigator){
 			navigator.pop();
 		}
 	}
-
 	renderFooter() {
     return (
       <View style={Style.scroll_footer}>
@@ -89,7 +81,6 @@ class Matches extends Component{
       </View>
     );
   }
-
 	_renderRow(data:Object) {
 		return (
 			<TouchableOpacity
@@ -109,7 +100,6 @@ class Matches extends Component{
 			</TouchableOpacity>
 		);
 	}
-
 	render() {
 		var { getMatches,refreshMatches,moreMatches,matches } = this.props;
 		return(
@@ -143,11 +133,11 @@ function timestamp(stamp){
 
 function mapStateToProps(state){
 	return {
-		...state.matches
+		...state.matchlist
 	}
 }
 function mapDispatchToProps(dispatch){
-  return bindActionCreators(MatchesActions,dispatch);
+  return bindActionCreators(MatchListActions,dispatch);
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Matches);
+export default connect(mapStateToProps,mapDispatchToProps)(MatchList);
