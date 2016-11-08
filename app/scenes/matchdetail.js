@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Actions } from 'react-native-router-flux';
 import {
 	StyleSheet,
 	Text,
@@ -11,8 +12,7 @@ import {
 	Modal,
 	Dimensions,
 	TouchableOpacity,
-	Platform,
-	Navigator
+	Platform
 } from 'react-native';
 import * as MatchdetailActions from '../actions/matchdetail';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -35,12 +35,6 @@ class MatchDetail extends Component{
 	}
 	componentDidMount() {
 		this.props.getMatchdetail();
-	}
-	_back() {
-		const {navigator} = this.props;
-		if(navigator){
-			navigator.pop();
-		}
 	}
 	_renderRow(data: Object) {
 		count++;
@@ -124,7 +118,7 @@ class MatchDetail extends Component{
 				<Image
 					key={data[i].name+i}
 					style={{width:(screenWidth-10-13)/13,height:(screenWidth-10-13)/13,padding:1,marginLeft:1,marginTop:2}}
-					source={{uri: data[i].name==='attribute_bonu'? ( abilityBaseUrl+data[i].name+'_lg.png' ) : ( abilityBaseUrl+data[i].name+'_hp1.png')}}/ >
+					source={{uri: data[i].name==='attribute_bonu'? ( abilityBaseUrl+data[i].name+'_hp1.png' ) : ( abilityBaseUrl+data[i].name+'_hp1.png')}}/ >
 			);
 		}
 		return(
@@ -137,7 +131,7 @@ class MatchDetail extends Component{
 			<View style={Style.container}>
 				<NavigatorBar
 					left={<Icon name='angle-left' size={32} style={{marginTop:-8}} color='#fc3' />}
-					leftClick={this._back.bind(this)}
+					leftClick={()=>{Actions.pop()}}
 					title={
 						<Text style={Style.navTitle_text}>{match_id}</Text>
 					}/>
@@ -160,3 +154,4 @@ function mapDispatchToProps(dispatch){
   return bindActionCreators(MatchdetailActions,dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(MatchDetail);
+

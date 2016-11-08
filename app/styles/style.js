@@ -11,6 +11,21 @@ export default style = StyleSheet.create({
     marginTop: isIOS?20:0,
     justifyContent: 'flex-start'
   },
+  tabBarStyle: {
+    backgroundColor: '#444'
+  },
+  tabBarTitle: {
+    textAlign: 'center',
+    color: '#ddd',
+    fontSize: 10,
+    paddingTop: 5
+  },
+  tabBarTitleSelected: {
+    textAlign: 'center',
+    color: '#fc3',
+    fontSize: 10,
+    paddingTop: 5
+  },
 	items: {
 		flex: 1,
 		flexDirection: 'row'
@@ -26,16 +41,6 @@ export default style = StyleSheet.create({
     fontSize: 16,
     color: '#fc3',
     textAlign: 'center'
-  },
-	tabTitle: {
-    fontSize: 10,
-    color: '#ddd',
-    paddingBottom: 5
-  },
-  tabTitle_selected: {
-    fontSize: 10,
-    color: '#fc3',
-    paddingBottom: 5
   },
   labelBox_sign: {
     alignSelf: 'flex-start',
@@ -99,6 +104,38 @@ export default style = StyleSheet.create({
     height: screenWidth,
     overflow: 'visible'
   },
+  playerNav: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    top: 0,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: screenHeight-20,
+    height: 30,
+    zIndex: 10
+  },
+  playerLeft: {
+    marginTop: 3,
+    paddingLeft:10
+  },
+  playerRight: {
+    width: 80,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginRight: 10,
+    marginTop: 3
+  },
+  playerBtn: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    color: '#fff',
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 2,
+    paddingBottom: 2,
+    borderRadius: 3,
+    fontSize: 12
+  },
   scroll_footer: {
     height: 20,
     width: screenWidth,
@@ -131,5 +168,104 @@ export default style = StyleSheet.create({
     marginTop: isIOS?(screenHeight-130)/2:(screenHeight-140)/2,
     backgroundColor: '#fff',
     borderRadius: 5
+  },
+  //抽屉菜单
+  drawer: {
+    backgroundColor: '#666',
+    marginTop: isIOS?20:0,
+    height: isIOS?screenHeight-20:screenHeight,
+  },
+  drawer_container: {
+    width: screenWidth*0.7-30,
+    marginLeft: 30,
+    marginTop: 30,
+    height: screenHeight-50
+  },
+  drawer_avatar: {
+    flexDirection: 'row',
+    marginBottom: 20
+  },
+  drawer_avatar_image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden'
+  },
+  drawer_avatar_text: {
+    fontSize: 12,
+    paddingTop: 10,
+    paddingLeft: 5,
+    marginLeft: 5,
+    color: '#ddd'
+  },
+  drawer_menu: {
+    borderTopColor: '#999',
+    borderTopWidth: 1,
+    marginTop: 10,
+    marginBottom: 10,
+    paddingTop: 10
+  },
+  drawer_menu_item: {
+    height: 30,
+    paddingLeft: 5,
+    color: '#ddd',
+    fontSize: 13,
+    lineHeight: 30
+  },
+  videoList: {
+    flex: 1,
+    marginTop: 2,
+    height:screenHeight-80,
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  listBox: {
+    width: screenWidth/2-3,
+    height: screenWidth*9/32+2,
+    marginLeft: 2
+  },
+  listBox2: {
+    width: screenWidth/2-3,
+    height: screenWidth*15/56+2,
+    marginLeft: 2
+  },
+  listBox3: {
+    width: screenWidth/2-3,
+    height: screenWidth*11/34+2,
+    marginLeft: 2
+  },
+  listBox4: {
+    width: screenWidth/2-3,
+    height: screenWidth*19/68+2,
+    marginLeft: 2
+  },
+  roomInfo: {
+    height: isIOS?30:35,
+    marginTop: -35,
+    flex: 1,
+    flexDirection: 'row'
+  },
+  roomInfo2: {
+    height: isIOS?15:20,
+    marginTop: -20,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  roomName: {
+    width: screenWidth/2-40,
+    paddingRight: 5,
+    fontSize: 10,
+    paddingTop: 2,
+    color: '#fff',
+    textAlign: 'right',
+    backgroundColor: 'transparent'
+  },
+  roomName2: {
+    fontSize: 10,
+    paddingTop: 2,
+    color: '#fff',
+    backgroundColor: 'transparent'
   }
 });

@@ -3,16 +3,16 @@ export const SET_MATCHID = 'SET_MATCHID';
 
 export function getMatches(){
 	return (dispatch,getState) => {
-		var { matchlist,userinfo } = getState();
+		const { matchlist,user } = getState();
 		if(matchlist.getStatus===true){
-			fetch('http://dota.dreamser.com/matchlist',{
+			fetch('http://dota.dreamser.com/apis/matchlist',{
 				method: 'POST',
 	    	headers: {
 	        'Accept': 'application/json',
 	        'Content-Type': 'application/json'
 	      },
 	      body: JSON.stringify({
-	      	account_id: userinfo.account_id,
+	      	account_id: user.account_id,
 	        offset: matchlist.offset,
 	        limit: matchlist.limit
 	      })
@@ -36,7 +36,7 @@ export function getMatches(){
 }
 export function refreshMatches(){
 	return (dispatch,getState) => {
-		var { matchlist } = getState();
+		const { matchlist } = getState();
 		matchlist.offset = 0;
 		matchlist.getStatus = true;
 		matchlist.matches = [];
@@ -45,14 +45,14 @@ export function refreshMatches(){
 }
 export function moreMatches(){
 	return (dispatch,getState) => {
-		var { matchlist } = getState();
+		const { matchlist } = getState();
 		matchlist.offset = matchlist.start_from-1;
 		dispatch(getMatches());
 	}
 }
 export function setMatchid(match_id){
 	return (dispatch,getState)=>{
-		var { matchdetail } = getState();
+		const { matchdetail } = getState();
 		console.log(getState());
 		matchdetail.match_id = match_id;
 		dispatch({

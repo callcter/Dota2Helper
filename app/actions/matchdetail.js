@@ -3,8 +3,7 @@ export const GET_MATCHDETAIL = 'GET_MATCHDETAIL';
 export function getMatchdetail(){
 	return (dispatch,getState)=>{
 		var { matchdetail } = getState();
-		console.log(matchdetail.match_id);
-		fetch('http://dota.dreamser.com/matchbyid',{
+		fetch('http://dota.dreamser.com/apis/matchbyid',{
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -15,6 +14,7 @@ export function getMatchdetail(){
 			})
 		}).then(response=>{
 			response.json().then(responseData=>{
+				console.log(responseData);
 				matchdetail.match_id = responseData.match_id;
 				matchdetail.team_win = responseData.radiant_win;
 				matchdetail.radiant_score = responseData.radiant_score;

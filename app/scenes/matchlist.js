@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component,PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Actions } from 'react-native-router-flux';
 import {
 	StyleSheet,
 	Text,
@@ -46,22 +47,6 @@ class MatchList extends Component{
       easing: Easing.linear
     }).start(()=>this.startAnimation());
   }
-	matchDetail(matchid) {
-		const {navigator} = this.props;
-		this.props.setMatchid(matchid);
-		if(navigator){
-			navigator.push({
-				name: 'match detail',
-				component: MatchDetail
-			});
-		}
-	}
-	_back() {
-		const {navigator} = this.props;
-		if(navigator){
-			navigator.pop();
-		}
-	}
 	renderFooter() {
     return (
       <View style={Style.scroll_footer}>
@@ -86,7 +71,8 @@ class MatchList extends Component{
 			<TouchableOpacity
 				style={{marginTop:5}}
 				onPress={()=>{
-					this.matchDetail(data.match_id);
+					this.props.setMatchid(data.match_id);
+					Actions.matchdetail();
 				}}>
 				<View style={Style.box_row}>
 					<Image
@@ -106,7 +92,7 @@ class MatchList extends Component{
 			<View style={Style.container}>
 				<NavigatorBar
 					left={<Icon name='angle-left' size={32} style={{marginTop:-8}} color='#fc3' />}
-					leftClick={this._back.bind(this)}
+					leftClick={()=>{Actions.pop()}}
 					title={<Text style={Style.navTitle_text}>近期比赛</Text>}/>
 				<ListView
 					dataSource={this.state.dataSource.cloneWithRows(matches)}
